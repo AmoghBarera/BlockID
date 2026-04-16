@@ -10,6 +10,10 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (_req, res) => {
+  res.json({ message: "BlockID API is running successfully!" });
+});
+
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "blockid-api" });
 });
