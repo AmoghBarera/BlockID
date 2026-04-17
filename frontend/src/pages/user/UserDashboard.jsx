@@ -12,6 +12,7 @@ export function UserDashboard() {
     email: "",
     phone: ""
   });
+  const [files, setFiles] = useState([]);
   const [identity, setIdentity] = useState(null);
   const [requests, setRequests] = useState([]);
   const [otp, setOtp] = useState("");
@@ -24,9 +25,14 @@ export function UserDashboard() {
 
   async function submitForm(event) {
     event.preventDefault();
+    
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => formData.append(key, value));
+    files.forEach((file) => formData.append("documents", file));
+
     const created = await apiFetch("/identities", {
       method: "POST",
-      body: JSON.stringify(form)
+      body: formData
     });
     try {
       const txHash = await sendRegistryTransaction("registerIdentity", created.did, created.metadataCid, created.proofHash);
@@ -74,6 +80,15 @@ export function UserDashboard() {
                 />
               </label>
             ))}
+            <label className="text-sm text-slate-300 md:col-span-2">
+              Upload Identity Documents (Max 5)
+              <input
+                type="file"
+                multiple
+                onChange={(e) => setFiles(Array.from(e.target.files))}
+                className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white outline-none"
+              />
+            </label>
           </div>
           <button className="mt-6 rounded-full bg-teal-400 px-5 py-3 font-semibold text-slate-950">
             Hash, Encrypt & Register
